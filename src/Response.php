@@ -438,22 +438,6 @@ class Response
     }
     
     /**
-     * Set the response as JSON
-     */
-    public function json($data, int $status = null, array $headers = [], int $options = 0): self
-    {
-        if ($status !== null) {
-            $this->setStatusCode($status);
-        }
-        
-        $this->setHeaders($headers);
-        $this->setContent(json_encode($data, $options));
-        $this->setContentType('application/json');
-        
-        return $this;
-    }
-    
-    /**
      * Append content to the response
      */
     public function appendContent($content): self
