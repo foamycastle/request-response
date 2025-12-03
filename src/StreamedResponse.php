@@ -9,7 +9,7 @@ class StreamedResponse extends Response
     protected $callback;
     protected bool $streamed = false;
     
-    public function __construct(callable $callback = null, int $status = 200, array $headers = [])
+    public function __construct(?callable $callback = null, int $status = 200, array $headers = [])
     {
         parent::__construct('', $status, $headers);
         
@@ -236,8 +236,6 @@ class StreamedResponse extends Response
     
     /**
      * Prevent content from being cached
-     */
-    public function setCallback cannot be called after the response has been streamed
      */
     public function setContent($content): Response
     {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Framework\Http;
+namespace Foamycastle\HTTP;
 
 class RedirectResponse extends Response
 {

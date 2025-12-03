@@ -1,6 +1,6 @@
 <?php
 
-namespace Framework\Http;
+namespace Foamycastle\HTTP;
 
 use InvalidArgumentException;
 use RuntimeException;
@@ -56,8 +56,9 @@ class BinaryFileResponse extends Response
     
     /**
      * Set headers for the file response
+     * @param array $headers
      */
-    protected function setHeaders(): self
+    public function setHeaders(array $headers): self
     {
         $fileInfo = new \SplFileInfo($this->file);
         
