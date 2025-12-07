@@ -4,7 +4,7 @@ namespace Foamycastle\HTTP;
 
 use RuntimeException;
 
-class StreamedResponse extends Response
+class StreamedResponse extends HttpResponse
 {
     protected $callback;
     protected bool $streamed = false;
@@ -40,7 +40,7 @@ class StreamedResponse extends Response
         $this->streamed = true;
         
         if (!is_callable($this->callback)) {
-            throw new RuntimeException('The Response callback must be a valid callable.');
+            throw new RuntimeException('The HttpResponse callback must be a valid callable.');
         }
         
         call_user_func($this->callback);
@@ -237,7 +237,7 @@ class StreamedResponse extends Response
     /**
      * Prevent content from being cached
      */
-    public function setContent($content): Response
+    public function setContent($content): HttpResponse
     {
         if ($this->streamed) {
             throw new RuntimeException('The content cannot be set on a streamed response.');

@@ -4,7 +4,7 @@ namespace Foamycastle\HTTP;
 
 use InvalidArgumentException;
 
-class Response
+class HttpResponse
 {
     protected $content;
     protected int $statusCode;
@@ -36,7 +36,7 @@ class Response
         305 => 'Use Proxy',
         307 => 'Temporary Redirect',
         308 => 'Permanent Redirect',
-        400 => 'Bad Request',
+        400 => 'Bad HttpRequest',
         401 => 'Unauthorized',
         402 => 'Payment Required',
         403 => 'Forbidden',
@@ -44,7 +44,7 @@ class Response
         405 => 'Method Not Allowed',
         406 => 'Not Acceptable',
         407 => 'Proxy Authentication Required',
-        408 => 'Request Timeout',
+        408 => 'HttpRequest Timeout',
         409 => 'Conflict',
         410 => 'Gone',
         411 => 'Length Required',
@@ -55,7 +55,7 @@ class Response
         416 => 'Range Not Satisfiable',
         417 => 'Expectation Failed',
         418 => 'I\'m a teapot',
-        421 => 'Misdirected Request',
+        421 => 'Misdirected HttpRequest',
         422 => 'Unprocessable Entity',
         423 => 'Locked',
         424 => 'Failed Dependency',
@@ -63,7 +63,7 @@ class Response
         426 => 'Upgrade Required',
         428 => 'Precondition Required',
         429 => 'Too Many Requests',
-        431 => 'Request Header Fields Too Large',
+        431 => 'HttpRequest Header Fields Too Large',
         451 => 'Unavailable For Legal Reasons',
         500 => 'Internal Server Error',
         501 => 'Not Implemented',
@@ -550,7 +550,7 @@ class Response
     }
     
     /**
-     * Morphs the Response instance into a JSON response
+     * Morphs the HttpResponse instance into a JSON response
      */
     public function morphToJson(): JsonResponse
     {

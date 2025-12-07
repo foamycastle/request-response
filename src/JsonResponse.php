@@ -4,7 +4,7 @@ namespace Foamycastle\HTTP;
 
 use InvalidArgumentException;
 
-class JsonResponse extends Response
+class JsonResponse extends HttpResponse
 {
     protected $data;
     protected int $encodingOptions = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES;
@@ -198,7 +198,7 @@ class JsonResponse extends Response
     /**
      * Override setContent to update data
      */
-    public function setContent($content): Response
+    public function setContent($content): HttpResponse
     {
         $this->data = $content;
         

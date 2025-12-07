@@ -2,7 +2,7 @@
 
 namespace Foamycastle\HTTP;
 
-class Request
+class HttpRequest
 {
     protected array $query = [];
     protected array $request = [];
@@ -38,7 +38,7 @@ class Request
     }
     
     /**
-     * Create a Request from PHP globals
+     * Create a HttpRequest from PHP globals
      */
     public static function capture(): self
     {
@@ -54,7 +54,7 @@ class Request
     }
     
     /**
-     * Create a Request from a URI and method
+     * Create a HttpRequest from a URI and method
      */
     public static function create(
         string $uri,
@@ -135,7 +135,7 @@ class Request
     /**
      * Get the request method
      */
-    public function method(): string
+    public function getMethod(): string
     {
         if ($this->method !== null) {
             return $this->method;
@@ -160,7 +160,7 @@ class Request
      */
     public function isMethod(string $method): bool
     {
-        return $this->method() === strtoupper($method);
+        return $this->getMethod() === strtoupper($method);
     }
     
     /**
@@ -691,7 +691,7 @@ class Request
             return new InputBag($this->json());
         }
         
-        return new InputBag($this->method() === 'GET' ? $this->query : $this->request);
+        return new InputBag($this->getMethod() === 'GET' ? $this->query : $this->request);
     }
     
     /**

@@ -2,7 +2,7 @@
 
 namespace Foamycastle\HTTP;
 
-class RedirectResponse extends Response
+class RedirectResponse extends HttpResponse
 {
     protected string $targetUrl;
     protected array $flashData = [];

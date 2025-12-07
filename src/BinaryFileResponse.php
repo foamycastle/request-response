@@ -5,7 +5,7 @@ namespace Foamycastle\HTTP;
 use InvalidArgumentException;
 use RuntimeException;
 
-class BinaryFileResponse extends Response
+class BinaryFileResponse extends HttpResponse
 {
     protected string $file;
     protected bool $deleteFileAfterSend = false;
@@ -262,7 +262,7 @@ class BinaryFileResponse extends Response
     /**
      * Check if the file was modified since the given date
      */
-    public function isNotModified(Request $request): bool
+    public function isNotModified(HttpRequest $request): bool
     {
         $lastModified = filemtime($this->file);
         $etag = md5_file($this->file);
