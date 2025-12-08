@@ -38,7 +38,7 @@ class HttpRequest
     }
     
     /**
-     * Create a HttpRequest from PHP globals
+     * Create a Request from PHP globals
      */
     public static function capture(): self
     {
@@ -54,7 +54,7 @@ class HttpRequest
     }
     
     /**
-     * Create a HttpRequest from a URI and method
+     * Create a Request from a URI and method
      */
     public static function create(
         string $uri,
@@ -135,7 +135,7 @@ class HttpRequest
     /**
      * Get the request method
      */
-    public function getMethod(): string
+    public function method(): string
     {
         if ($this->method !== null) {
             return $this->method;
@@ -160,7 +160,7 @@ class HttpRequest
      */
     public function isMethod(string $method): bool
     {
-        return $this->getMethod() === strtoupper($method);
+        return $this->method() === strtoupper($method);
     }
     
     /**
@@ -172,16 +172,122 @@ class HttpRequest
             return $this->pathInfo;
         }
         
-        $requestUri = $this->server['REQUEST_URI'] ?? '/';
+        $requestUri = $this->getRequestUri();
         
         // Remove query string
         if (false !== $pos = strpos($requestUri, '?')) {
             $requestUri = substr($requestUri, 0, $pos);
         }
         
+        // Decode the path
+        $requestUri = rawurldecode($requestUri);
+        
         $this->pathInfo = $requestUri;
         
         return $this->pathInfo;
+    }
+    
+    /**
+     * Get the request URI from server variables
+     */
+    protected function getRequestUri(): string
+    {
+        // Try REQUEST_URI first (most common)
+        if (isset($this->server['REQUEST_URI'])) {
+            $requestUri = $this->server['REQUEST_URI'];
+            
+            // Handle proxy scenarios where REQUEST_URI might include the full URL
+            if (preg_match('#^https?://[^/]+(.*)$#', $requestUri, $matches)) {
+                $requestUri = $matches[1];
+            }
+            
+            return $requestUri;
+        }
+        
+        // Fallback to ORIG_PATH_INFO
+        if (isset($this->server['ORIG_PATH_INFO'])) {
+            $requestUri = $this->server['ORIG_PATH_INFO'];
+            
+            // Append query string if present
+            if (isset($this->server['QUERY_STRING']) && $this->server['QUERY_STRING'] !== '') {
+                $requestUri .= '?' . $this->server['QUERY_STRING'];
+            }
+            
+            return $requestUri;
+        }
+        
+        // Fallback to PATH_INFO
+        if (isset($this->server['PATH_INFO'])) {
+            return $this->server['PATH_INFO'];
+        }
+        
+        // Last resort: build from SCRIPT_NAME and PHP_SELF
+        if (isset($this->server['PHP_SELF'])) {
+            return $this->server['PHP_SELF'];
+        }
+        
+        // Default fallback
+        return '/';
+    }
+    
+    /**
+     * Get the base path (useful when app is in a subdirectory)
+     */
+    public function getBasePath(): string
+    {
+        $filename = basename($this->server['SCRIPT_FILENAME'] ?? '');
+        $scriptName = $this->server['SCRIPT_NAME'] ?? '';
+        
+        if (basename($scriptName) === $filename) {
+            return rtrim(dirname($scriptName), '/');
+        }
+        
+        return '';
+    }
+    
+    /**
+     * Get the path info relative to the base path
+     */
+    public function getPathInfo(): string
+    {
+        $requestUri = $this->path();
+        $basePath = $this->getBasePath();
+        
+        if ($basePath && strpos($requestUri, $basePath) === 0) {
+            $requestUri = substr($requestUri, strlen($basePath));
+        }
+        
+        return '/' . ltrim($requestUri, '/');
+    }
+    
+    /**
+     * Get the root URL
+     */
+    public function root(): string
+    {
+        return $this->getScheme() . '://' . $this->getHttpHost() . $this->getBasePath();
+    }
+    
+    /**
+     * Get segments of the current path
+     */
+    public function segments(): array
+    {
+        $segments = explode('/', $this->path());
+        
+        return array_values(array_filter($segments, function($value) {
+            return $value !== '';
+        }));
+    }
+    
+    /**
+     * Get a specific segment of the path
+     */
+    public function segment(int $index, $default = null)
+    {
+        $segments = $this->segments();
+        
+        return $segments[$index - 1] ?? $default;
     }
     
     /**
@@ -691,7 +797,7 @@ class HttpRequest
             return new InputBag($this->json());
         }
         
-        return new InputBag($this->getMethod() === 'GET' ? $this->query : $this->request);
+        return new InputBag($this->method() === 'GET' ? $this->query : $this->request);
     }
     
     /**
